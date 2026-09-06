@@ -1,0 +1,79 @@
+# ---------------------------------------------------------------
+# Katalogi lokalne / narzędziowe
+# ---------------------------------------------------------------
+.context/
+.claude/
+# .reference/ przeniesione do .context/reference/ (2026-09-05);
+# regula zostaje na wypadek odtworzenia katalogu w starym miejscu
+.reference/
+
+# ---------------------------------------------------------------
+# Vivado 2025.2 - projekt w hardware/
+# Wersjonujemy: *.xpr oraz hardware/**/*.srcs (źródła i constraints).
+# Reszta to wynik generacji - odtwarzalna z projektu.
+# ---------------------------------------------------------------
+*.cache/
+*.hw/
+*.sim/
+*.runs/
+*.ip_user_files/
+*.gen/
+*.hbs/
+*.data/
+.Xil/
+.jobs/
+
+# Kopie zapasowe projektu robione przez Vivado
+*.xpr.orig
+*.backup.jou
+*.backup.log
+*_bkup.*
+vivado_pid*.str
+vivado_pid*.debug
+
+# Logi / journale (uruchamiane z dowolnego katalogu)
+vivado*.jou
+vivado*.log
+vivado*.str
+vivado_*.zip
+hs_err_pid*.log
+xsim.dir/
+xvhdl.log
+xvhdl.pb
+xvlog.log
+xvlog.pb
+xelab.log
+xelab.pb
+xsim*.jou
+xsim*.log
+webtalk*.jou
+webtalk*.log
+usage_statistics_webtalk.*
+tight_setup_hold_pins.txt
+clockInfo.txt
+fsm_encoding.os
+planAhead*.jou
+planAhead*.log
+*.dcp
+*.bit
+*.bin.bit
+*.ltx
+*.rpt
+*.pb
+*.wdb
+*.wcfg.bak
+*.str
+
+# Vitis / XSCT / SDK, gdyby doszło
+.metadata/
+_ide/
+*.sdk/
+
+# ---------------------------------------------------------------
+# Śmieci systemowe / edytorskie
+# ---------------------------------------------------------------
+Thumbs.db
+desktop.ini
+.DS_Store
+*.swp
+*~
