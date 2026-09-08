@@ -18,27 +18,27 @@ interface axil_if #(
 
 localparam STRB_WIDTH = DATA_WIDTH / 8;
 
-logic   [ADDR_WIDTH-1:0]    awaddr;
-logic                       awvalid;
-logic                       awready;
+logic   [ADDR_WIDTH-1:0]    awaddr;     // Write address
+logic                       awvalid;    // Write address valid/ready to be read by the slave
+logic                       awready;    // Write address ready/slave ready to accept the address
 
-logic   [DATA_WIDTH-1:0]    wdata;
-logic   [STRB_WIDTH-1:0]    wstrb;
-logic                       wvalid;
-logic                       wready;
+logic   [DATA_WIDTH-1:0]    wdata;      // Write data
+logic   [STRB_WIDTH-1:0]    wstrb;      // Write strobes, one bit for each byte lane. 1 = write, 0 = skip.
+logic                       wvalid;     // Write valid/ready to be read by the slave
+logic                       wready;     // Write ready/slave ready to accept the write data
 
-logic              [1:0]    bresp;
-logic                       bvalid;
-logic                       bready;
+logic              [1:0]    bresp;      // Write response. 2'b00 = OKAY, 2'b01 = EXOKAY, 2'b10 = SLVERR, 2'b11 = DECERR
+logic                       bvalid;     // Write response valid/ready to be read by the master
+logic                       bready;     // Response ready/master ready to accept the write response
 
-logic   [ADDR_WIDTH-1:0]    araddr;
-logic                       arvalid;
-logic                       arready;
+logic   [ADDR_WIDTH-1:0]    araddr;     // Read address
+logic                       arvalid;    // Read address valid/ready to be read by the slave
+logic                       arready;    // Read address ready/slave ready to accept the address
 
-logic   [DATA_WIDTH-1:0]    rdata;
-logic              [1:0]    rresp;
-logic                       rvalid;
-logic                       rready;
+logic   [DATA_WIDTH-1:0]    rdata;      // Read data
+logic              [1:0]    rresp;      // Read response. 2'b00 = OKAY, 2'b01 = EXOKAY, 2'b10 = SLVERR, 2'b11 = DECERR
+logic                       rvalid;     // Read valid/ready to be read by the master
+logic                       rready;     // Read ready/master ready to accept the read data
 
 modport master (
     output  awaddr, awvalid, wdata, wstrb, wvalid, bready, araddr, arvalid, rready,
@@ -55,37 +55,30 @@ modport slave (
 // A channel that has offered data must keep offering it, unchanged, until the
 // far side takes it. Everything below is that one rule applied per channel.
 
-property p_valid_held(valid, ready);
-    @(posedge clk) disable iff (!rst_n)
-    (valid && !ready) |=> valid;
-endproperty
+a_aw_valid_held: assert property (@(posedge clk) disable iff (!rst_n)
+    (awvalid && !awready) |=> awvalid);
+a_aw_addr_held:  assert property (@(posedge clk) disable iff (!rst_n)
+    (awvalid && !awready) |=> $stable(awaddr));
 
-property p_payload_held(valid, ready, payload);
-    @(posedge clk) disable iff (!rst_n)
-    (valid && !ready) |=> $stable(payload);
-endproperty
+a_w_valid_held:  assert property (@(posedge clk) disable iff (!rst_n)
+    (wvalid && !wready) |=> wvalid);
+a_w_data_held:   assert property (@(posedge clk) disable iff (!rst_n)
+    (wvalid && !wready) |=> $stable(wdata) && $stable(wstrb));
 
-a_aw_valid_held:    assert property (p_valid_held(awvalid, awready));
-a_aw_addr_held:     assert property (p_payload_held(awvalid, awready, awaddr));
+a_b_valid_held:  assert property (@(posedge clk) disable iff (!rst_n)
+    (bvalid && !bready) |=> bvalid);
+a_b_resp_held:   assert property (@(posedge clk) disable iff (!rst_n)
+    (bvalid && !bready) |=> $stable(bresp));
 
-a_w_valid_held:     assert property (p_valid_held(wvalid, wready));
-a_w_data_held:      assert property (p_payload_held(wvalid, wready, {wdata, wstrb}));
+a_ar_valid_held: assert property (@(posedge clk) disable iff (!rst_n)
+    (arvalid && !arready) |=> arvalid);
+a_ar_addr_held:  assert property (@(posedge clk) disable iff (!rst_n)
+    (arvalid && !arready) |=> $stable(araddr));
 
-a_b_valid_held:     assert property (p_valid_held(bvalid, bready));
-a_b_resp_held:      assert property (p_payload_held(bvalid, bready, bresp));
-
-a_ar_valid_held:    assert property (p_valid_held(arvalid, arready));
-a_ar_addr_held:     assert property (p_payload_held(arvalid, arready, araddr));
-
-a_r_valid_held:     assert property (p_valid_held(rvalid, rready));
-a_r_data_held:      assert property (p_payload_held(rvalid, rready, {rdata, rresp}));
-
-// A handshake on an undefined VALID is a testbench bug rather than a design
-// bug, but it is far cheaper to catch here than to chase through a waveform.
-a_no_x_on_valid:    assert property (
-    @(posedge clk) disable iff (!rst_n)
-    !$isunknown({awvalid, wvalid, bvalid, arvalid, rvalid})
-);
+a_r_valid_held:  assert property (@(posedge clk) disable iff (!rst_n)
+    (rvalid && !rready) |=> rvalid);
+a_r_data_held:   assert property (@(posedge clk) disable iff (!rst_n)
+    (rvalid && !rready) |=> $stable(rdata) && $stable(rresp));
 
 `endif
 

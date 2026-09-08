@@ -77,3 +77,6 @@ desktop.ini
 .DS_Store
 *.swp
 *~
+
+# Vivado simulation work directory
+hardware/test/.xsim/

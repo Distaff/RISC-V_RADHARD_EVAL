@@ -27,7 +27,8 @@ module regfile (
 logic   [31:0]  reg_data [0:31];        // 32 registers of 32 bits each
 
 logic    [4:0]  rst_cnt;                // clearing counter
-logic           rst_busy;               // high while the file is being cleared
+logic           rst_busy = 1'b1;      // high while the file is being cleared; starts set so
+                                        // that readiness is never claimed before the first reset
 
 logic           ram_we;
 logic    [4:0]  ram_waddr;
@@ -58,7 +59,6 @@ always_ff @(posedge clk) begin
     end
 end
 
-initial rst_busy = 1'b1;    // do not claim readiness before the first reset
 
 endmodule
 
