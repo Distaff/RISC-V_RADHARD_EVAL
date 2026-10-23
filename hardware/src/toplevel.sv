@@ -150,7 +150,7 @@ axil_xbar #(
     .clk(clk),
     .rst_n(rst_n),
 
-    .dbg_active(dbg_active),
+    .dbg_override_sel(dbg_active),
 
     .core_axi(core_axi),
     .dbg_axi(dbg_axi),

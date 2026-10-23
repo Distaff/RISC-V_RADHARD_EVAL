@@ -52,8 +52,9 @@ modport slave (
 
 `ifndef SYNTHESIS
 
-// A channel that has offered data must keep offering it, unchanged, until the
-// far side takes it. Everything below is that one rule applied per channel.
+// Assertions: After data has been marked valid, it must remain valid 
+// until the other side accepts it. The address and data must also remain 
+// stable until accepted.
 
 a_aw_valid_held: assert property (@(posedge clk) disable iff (!rst_n)
     (awvalid && !awready) |=> awvalid);
