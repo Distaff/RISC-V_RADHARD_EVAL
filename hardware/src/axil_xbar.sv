@@ -11,6 +11,9 @@
  *      is passed on, which costs one cycle.
  *      An address matching no slave is answered locally with DECERR and the
  *      slaves are left untouched.
+ *
+ *      Adds 1 cycle of latency due to using registers to hold the address and 
+ *      select the slave. This is avoidable, but would complicate the design.
  *****************************************************************************/
 
 // TODO - check that Vivado elaborates the slave interface array. AMD

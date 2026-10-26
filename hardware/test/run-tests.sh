@@ -2,7 +2,8 @@
 #############################################################################
 #  Author: Piotr Kadziela
 #  Description:
-#      Runs every unit testbench under testbench-unit/ and prints a summary.
+#      Runs every testbench under testbench-unit/ and testbench-integration/
+#      and prints a summary.
 #      The whole tree is compiled once into a single library; each testbench
 #      is then elaborated and run on its own, so one failure does not take the
 #      rest down with it.
@@ -20,6 +21,7 @@ set -u
 HW=$(cd "$(dirname "$0")/.." && pwd)
 SRC="$HW/src"
 UNIT="$HW/test/testbench-unit"
+INTEG="$HW/test/testbench-integration"
 WORK="$HW/test/.xsim"
 FILTER="${1:-}"
 
@@ -64,7 +66,7 @@ cd "$WORK" || exit 1
     ls "$SRC"/interfaces/*_pkg.sv
     ls "$SRC"/interfaces/*_if.sv
     find "$SRC" -name '*.sv' ! -path '*/interfaces/*'
-    find "$UNIT" -name '*_tb.sv'
+    find "$UNIT" "$INTEG" -name '*_tb.sv'
 } | winlist > files.f
 
 echo "compiling..."
@@ -77,15 +79,31 @@ fi
 pass=0
 fail=0
 
-for tb in $(find "$UNIT" -name '*_tb.sv' | sort); do
+# Colours only on a terminal, so a redirected log stays plain text.
+if [ -t 1 ]; then
+    GREEN=$(printf '\033[32m')
+    RED=$(printf '\033[31m')
+    CYAN=$(printf '\033[36m')
+    RESET=$(printf '\033[0m')
+else
+    GREEN=''; RED=''; CYAN=''; RESET=''
+fi
+
+for tb in $(find "$UNIT" -name '*_tb.sv' | sort) $(find "$INTEG" -name '*_tb.sv' | sort); do
     top=$(basename "$tb" .sv)
     case "$top" in
         *"$FILTER"*) ;;
         *) continue ;;
     esac
 
+    case "$tb" in
+        "$INTEG"/*) kind=INTG ;;
+        *)          kind=UNIT ;;
+    esac
+    name="$CYAN$kind$RESET $(printf '%-28s' "$top")"
+
     if ! xelab -s "${top}_snap" "$top" > "$top.elab.log" 2>&1; then
-        printf '%-28s ELAB FAIL\n' "$top"
+        printf '%s %sELAB FAIL%s\n' "$name" "$RED" "$RESET"
         grep -i 'error' "$top.elab.log" | head -10 | sed 's/^/    /'
         fail=$((fail + 1))
         continue
@@ -94,10 +112,10 @@ for tb in $(find "$UNIT" -name '*_tb.sv' | sort); do
     xsim "${top}_snap" -runall > "$top.log" 2>&1
 
     if grep -q 'TB_RESULT PASS' "$top.log"; then
-        printf '%-28s PASS  %s\n' "$top" "$(grep -o '[0-9]* checks' "$top.log" | head -1)"
+        printf '%s %sPASS%s  %s\n' "$name" "$GREEN" "$RESET" "$(grep -o '[0-9]* checks' "$top.log" | head -1)"
         pass=$((pass + 1))
     else
-        printf '%-28s FAIL\n' "$top"
+        printf '%s %sFAIL%s\n' "$name" "$RED" "$RESET"
         grep '  FAIL' "$top.log" | head -20 | sed 's/^/    /'
         grep -q 'TB_RESULT' "$top.log" || echo "    testbench did not finish - see $WORK/$top.log"
         fail=$((fail + 1))
@@ -105,5 +123,6 @@ for tb in $(find "$UNIT" -name '*_tb.sv' | sort); do
 done
 
 echo "--------------------------------------------"
-echo "$pass passed, $fail failed"
+[ "$fail" -eq 0 ] && colour=$GREEN || colour=$RED
+echo "$colour$pass passed, $fail failed$RESET"
 [ "$fail" -eq 0 ]
