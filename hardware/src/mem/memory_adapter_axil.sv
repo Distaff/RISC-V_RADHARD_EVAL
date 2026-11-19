@@ -10,7 +10,7 @@
  *      AW and W. Read data comes straight from the memory output register.
  *****************************************************************************/
 
-module memory_axil (
+module memory_adapter_axil (
     input wire              clk,
     input wire              rst_n,
 

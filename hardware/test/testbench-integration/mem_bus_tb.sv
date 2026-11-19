@@ -4,7 +4,8 @@
  *  Author: Piotr Kadziela
  *  Description:
  *      Integration testbench for axil_xbar with two memories behind
- *      memory_axil, wired like the data and instruction memories in toplevel.
+ *      memory_adapter_axil, wired like the data and instruction memories
+ *      in toplevel.
  *      The instruction memory is writable only while debug owns the bus.
  *****************************************************************************/
 
@@ -51,7 +52,7 @@ logic           dmem_en;
 logic [31:0]    dmem_addr, dmem_rdata, dmem_wdata;
 logic  [3:0]    dmem_wstrb;
 
-memory_axil dmem_axi (
+memory_adapter_axil dmem_axi (
     .clk(clk),
     .rst_n(rst_n),
     .write_lock(1'b0),
@@ -81,7 +82,7 @@ logic           imem_en;
 logic [31:0]    imem_addr, imem_rdata, imem_wdata;
 logic  [3:0]    imem_wstrb;
 
-memory_axil imem_axi (
+memory_adapter_axil imem_axi (
     .clk(clk),
     .rst_n(rst_n),
     .write_lock(!dbg_override_sel),

@@ -3,8 +3,8 @@
 /*****************************************************************************
  *  Author: Piotr Kadziela
  *  Description:
- *      Unit testbench for memory_axil driving a real memory instance, so the
- *      whole path from the bus to the array is exercised.
+ *      Unit testbench for memory_adapter_axil driving a real memory instance,
+ *      so the whole path from the bus to the array is exercised.
  *      Covers a word round trip, a byte strobe leaving the other lanes alone,
  *      and write_lock refusing writes with SLVERR while still allowing reads.
  *      The bus tasks give up after a bounded wait rather than blocking, so a
@@ -13,7 +13,7 @@
 
 `include "tb_utils.svh"
 
-module memory_axil_tb;
+module memory_adapter_axil_tb;
 
 import axil_pkg::*;
 
@@ -35,7 +35,7 @@ logic  [3:0]    mem_wstrb;
 
 axil_if axi (.clk(clk), .rst_n(rst_n));
 
-memory_axil dut (
+memory_adapter_axil dut (
     .clk(clk),
     .rst_n(rst_n),
     .write_lock(write_lock),

@@ -184,7 +184,7 @@ memory #(
     .b_wstrb(imem_b_wstrb)
 );
 
-memory_axil imem_axi (
+memory_adapter_axil imem_axi (
     .clk(clk),
     .rst_n(rst_n),
 
@@ -225,7 +225,7 @@ memory #(
     .b_wstrb(dmem_b_wstrb)
 );
 
-memory_axil dmem_axi (
+memory_adapter_axil dmem_axi (
     .clk(clk),
     .rst_n(rst_n),
 
