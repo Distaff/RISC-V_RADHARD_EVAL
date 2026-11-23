@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 `default_nettype none
 /*****************************************************************************
- *  Author: Piotr Kadziela
+ *  Author: Piotr Kadziela (AI Generated)
  *  Description:
  *      Unit testbench for imm_decoder. One instruction per format, encoded by
  *      hand, with a negative case for the formats that sign extend. The B and

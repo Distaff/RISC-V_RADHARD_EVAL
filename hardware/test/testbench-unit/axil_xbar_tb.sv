@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 `default_nettype none
 /*****************************************************************************
- *  Author: Piotr Kadziela
+ *  Author: Piotr Kadziela (AI Generated)
  *  Description:
  *      Unit testbench for axil_xbar with two slave models.
  *      Covers routing to each slave, DECERR on an unmapped address, a slave

@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 `default_nettype none
 /*****************************************************************************
- *  Author: Piotr Kadziela
+ *  Author: Piotr Kadziela (AI Generated)
  *  Description:
  *      Unit testbench for alu. Every expected value is worked out by hand and
  *      written into the vector, so nothing here depends on a second

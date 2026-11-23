@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 `default_nettype none
 /*****************************************************************************
- *  Author: Piotr Kadziela
+ *  Author: Piotr Kadziela (AI Generated)
  *  Description:
  *      Unit testbench for uarttx. The serial line is sampled at the centre of
  *      each bit and compared against the frame the byte should produce: a low

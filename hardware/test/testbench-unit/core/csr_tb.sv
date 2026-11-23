@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 `default_nettype none
 /*****************************************************************************
- *  Author: Piotr Kadziela
+ *  Author: Piotr Kadziela (AI Generated)
  *  Description:
  *      Unit testbench for csr. Expected values are worked out by hand.
  *      minstret only moves on instr_retired, so it is used for the access
