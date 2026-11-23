@@ -167,23 +167,23 @@ initial begin
 
     // Full word out and back.
     axi_write(32'h0000_0010, 32'hDEAD_BEEF, 4'b1111, resp);
-    `CHECK_EQ(resp, RESP_OKAY, "word write accepted")
+    `CHECK_EQ(resp, AXIL_RESP_OKAY, "word write accepted")
     axi_read(32'h0000_0010, data, resp);
-    `CHECK_EQ(resp, RESP_OKAY, "word read accepted")
+    `CHECK_EQ(resp, AXIL_RESP_OKAY, "word read accepted")
     `CHECK_EQ(data, 32'hDEAD_BEEF, "word read back")
 
     // A single byte lane must leave the rest of the word alone.
     axi_write(32'h0000_0010, 32'h0000_0055, 4'b0001, resp);
-    `CHECK_EQ(resp, RESP_OKAY, "byte write accepted")
+    `CHECK_EQ(resp, AXIL_RESP_OKAY, "byte write accepted")
     axi_read(32'h0000_0010, data, resp);
     `CHECK_EQ(data, 32'hDEAD_BE55, "byte write touches one lane")
 
     // With the lock raised a write is refused and the memory keeps its value.
     write_lock = 1'b1;
     axi_write(32'h0000_0010, 32'h0000_0000, 4'b1111, resp);
-    `CHECK_EQ(resp, RESP_SLVERR, "locked write refused")
+    `CHECK_EQ(resp, AXIL_RESP_SLVERR, "locked write refused")
     axi_read(32'h0000_0010, data, resp);
-    `CHECK_EQ(resp, RESP_OKAY, "read allowed while locked")
+    `CHECK_EQ(resp, AXIL_RESP_OKAY, "read allowed while locked")
     `CHECK_EQ(data, 32'hDEAD_BE55, "locked write left no trace")
 
     write_lock = 1'b0;

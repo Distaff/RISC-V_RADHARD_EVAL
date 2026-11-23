@@ -288,11 +288,11 @@ localparam ERR_CORE     = 2;    // core stopped in CORE_ERROR
 logic core_bus_err;
 logic dbg_bus_err;
 
-assign core_bus_err = (core_axi.bvalid && core_axi.bready && core_axi.bresp != RESP_OKAY)
-                   || (core_axi.rvalid && core_axi.rready && core_axi.rresp != RESP_OKAY);
+assign core_bus_err = (core_axi.bvalid && core_axi.bready && core_axi.bresp != AXIL_RESP_OKAY)
+                   || (core_axi.rvalid && core_axi.rready && core_axi.rresp != AXIL_RESP_OKAY);
 
-assign dbg_bus_err  = (dbg_axi.bvalid && dbg_axi.bready && dbg_axi.bresp != RESP_OKAY)
-                   || (dbg_axi.rvalid && dbg_axi.rready && dbg_axi.rresp != RESP_OKAY);
+assign dbg_bus_err  = (dbg_axi.bvalid && dbg_axi.bready && dbg_axi.bresp != AXIL_RESP_OKAY)
+                   || (dbg_axi.rvalid && dbg_axi.rready && dbg_axi.rresp != AXIL_RESP_OKAY);
 
 always_ff @(posedge clk) begin
     if (!rst_n || err_clear) begin

@@ -208,36 +208,36 @@ initial begin
 
     // Data memory: two words must not alias, a byte strobe touches one lane
     axi_write(core_axi, 32'h0000_0010, 32'hDEAD_BEEF, 4'b1111, resp);
-    `CHECK_EQ(resp, RESP_OKAY, "dmem write")
+    `CHECK_EQ(resp, AXIL_RESP_OKAY, "dmem write")
     axi_write(core_axi, 32'h0000_0014, 32'hCAFE_F00D, 4'b1111, resp);
     axi_write(core_axi, 32'h0000_0010, 32'h0000_5500, 4'b0010, resp);
-    `CHECK_EQ(resp, RESP_OKAY, "dmem byte write")
+    `CHECK_EQ(resp, AXIL_RESP_OKAY, "dmem byte write")
 
     axi_read(core_axi, 32'h0000_0010, data, resp);
-    `CHECK_EQ(resp, RESP_OKAY, "dmem read")
+    `CHECK_EQ(resp, AXIL_RESP_OKAY, "dmem read")
     `CHECK_EQ(data, 32'hDEAD_55EF, "dmem byte lane")
     axi_read(core_axi, 32'h0000_0014, data, resp);
     `CHECK_EQ(data, 32'hCAFE_F00D, "dmem second word")
 
     // Past the end of the memory the window does not decode
     axi_read(core_axi, 32'h0000_0400, data, resp);
-    `CHECK_EQ(resp, RESP_DECERR, "past dmem end")
+    `CHECK_EQ(resp, AXIL_RESP_DECERR, "past dmem end")
 
     // Debug loads the instruction memory and sees what the core wrote
     dbg_override_sel = 1'b1;
     axi_write(dbg_axi, 32'h4000_0000, 32'h0000_0013, 4'b1111, resp);
-    `CHECK_EQ(resp, RESP_OKAY, "debug imem write")
+    `CHECK_EQ(resp, AXIL_RESP_OKAY, "debug imem write")
     axi_read(dbg_axi, 32'h0000_0014, data, resp);
     `CHECK_EQ(data, 32'hCAFE_F00D, "debug reads dmem")
 
     // The running core reads the instruction memory but cannot write it
     dbg_override_sel = 1'b0;
     axi_read(core_axi, 32'h4000_0000, data, resp);
-    `CHECK_EQ(resp, RESP_OKAY, "core imem read")
+    `CHECK_EQ(resp, AXIL_RESP_OKAY, "core imem read")
     `CHECK_EQ(data, 32'h0000_0013, "core imem data")
 
     axi_write(core_axi, 32'h4000_0000, 32'hFFFF_FFFF, 4'b1111, resp);
-    `CHECK_EQ(resp, RESP_SLVERR, "core imem write refused")
+    `CHECK_EQ(resp, AXIL_RESP_SLVERR, "core imem write refused")
     axi_read(core_axi, 32'h4000_0000, data, resp);
     `CHECK_EQ(data, 32'h0000_0013, "imem unchanged")
 

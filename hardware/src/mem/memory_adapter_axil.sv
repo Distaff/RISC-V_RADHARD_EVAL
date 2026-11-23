@@ -49,7 +49,7 @@ assign mem_wstrb = write_start ? axi.wstrb : 4'b0000;
 // mem_rdata holds until the next mem_en, which cannot come before rready
 assign axi.rvalid = (state == READ_DATA);
 assign axi.rdata  = mem_rdata;
-assign axi.rresp  = RESP_OKAY;
+assign axi.rresp  = AXIL_RESP_OKAY;
 assign axi.bvalid = (state == WRITE_RESP);
 
 always_ff @(posedge clk) begin
@@ -60,7 +60,7 @@ always_ff @(posedge clk) begin
         case (state)
             IDLE: begin
                 if (write_start) begin
-                    axi.bresp <= write_lock ? RESP_SLVERR : RESP_OKAY;
+                    axi.bresp <= write_lock ? AXIL_RESP_SLVERR : AXIL_RESP_OKAY;
                     state     <= WRITE_RESP;
                 end
                 else if (read_start) begin

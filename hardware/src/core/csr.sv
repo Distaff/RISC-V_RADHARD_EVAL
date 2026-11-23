@@ -139,6 +139,9 @@ assign minstret_write = write_performed && (csr_addr == `CSR_ADDR_MINSTRET || cs
 logic mcycle_write;     // Is the instruction writing to mcycle or mcycleh?
 assign mcycle_write = write_performed && (csr_addr == `CSR_ADDR_MCYCLE || csr_addr == `CSR_ADDR_MCYCLEH);
 
+// ================
+//    SYNC LOGIC
+// ================
 always_ff @(posedge clk) begin
     if (!rst_n) begin
         minstret <= 64'b0;

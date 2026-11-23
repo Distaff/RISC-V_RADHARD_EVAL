@@ -32,8 +32,8 @@ logic [31:0]    last_wdata;
 assign s.awready = !aw_got && (!W_FIRST || w_got);
 assign s.wready  = !w_got;
 assign s.arready = !s.rvalid;
-assign s.bresp   = RESP_OKAY;
-assign s.rresp   = RESP_OKAY;
+assign s.bresp   = AXIL_RESP_OKAY;
+assign s.rresp   = AXIL_RESP_OKAY;
 
 always_ff @(posedge clk) begin
     if (!rst_n) begin
@@ -205,31 +205,31 @@ initial begin
 
     // Slave 0
     axi_write(core_axi, 32'h0000_0004, 32'hDEAD_BEEF, resp);
-    `CHECK_EQ(resp, RESP_OKAY, "s0 write")
+    `CHECK_EQ(resp, AXIL_RESP_OKAY, "s0 write")
     `CHECK_EQ(s0.last_wdata, 32'hDEAD_BEEF, "s0 write data")
     `CHECK_EQ(s0.writes, 1, "s0 written once")
     `CHECK_EQ(s1.writes, 0, "s1 not written")
 
     axi_read(core_axi, 32'h0000_0004, data, resp);
-    `CHECK_EQ(resp, RESP_OKAY, "s0 read")
+    `CHECK_EQ(resp, AXIL_RESP_OKAY, "s0 read")
     `CHECK_EQ(data, 32'h0000_0004, "s0 read data")
     `CHECK_EQ(s1.reads, 0, "s1 not read")
 
     // Slave 1 takes W before AW
     axi_write(core_axi, 32'h8000_0008, 32'h1234_5678, resp);
-    `CHECK_EQ(resp, RESP_OKAY, "s1 write")
+    `CHECK_EQ(resp, AXIL_RESP_OKAY, "s1 write")
     `CHECK_EQ(s1.last_wdata, 32'h1234_5678, "s1 write data")
     `CHECK_EQ(s0.writes, 1, "s0 not written again")
 
     axi_read(core_axi, 32'h8000_0008, data, resp);
-    `CHECK_EQ(resp, RESP_OKAY, "s1 read")
+    `CHECK_EQ(resp, AXIL_RESP_OKAY, "s1 read")
     `CHECK_EQ(data, 32'h0100_0008, "s1 read data")
 
     // Unmapped address
     axi_write(core_axi, 32'h4000_0000, 32'hFFFF_FFFF, resp);
-    `CHECK_EQ(resp, RESP_DECERR, "unmapped write")
+    `CHECK_EQ(resp, AXIL_RESP_DECERR, "unmapped write")
     axi_read(core_axi, 32'h4000_0000, data, resp);
-    `CHECK_EQ(resp, RESP_DECERR, "unmapped read")
+    `CHECK_EQ(resp, AXIL_RESP_DECERR, "unmapped read")
     `CHECK_EQ(data, 32'h0, "unmapped read data")
     `CHECK_EQ(s0.writes + s1.writes, 2, "unmapped write reached no slave")
     `CHECK_EQ(s0.reads + s1.reads, 2, "unmapped read reached no slave")
@@ -244,13 +244,13 @@ initial begin
     join_none
 
     axi_read(dbg_axi, 32'h8000_0020, data, resp);
-    `CHECK_EQ(resp, RESP_OKAY, "debug read")
+    `CHECK_EQ(resp, AXIL_RESP_OKAY, "debug read")
     `CHECK_EQ(data, 32'h0100_0020, "debug read data")
     `CHECK(!core_done && core_axi.arready !== 1'b1, "core held off")
 
     dbg_override_sel = 1'b0;
     wait fork;
-    `CHECK_EQ(core_resp, RESP_OKAY, "core read after debug")
+    `CHECK_EQ(core_resp, AXIL_RESP_OKAY, "core read after debug")
     `CHECK_EQ(core_data, 32'h0000_0010, "core read data after debug")
 
     `TB_FINISH

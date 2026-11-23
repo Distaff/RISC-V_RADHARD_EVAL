@@ -16,6 +16,8 @@ interface axil_if #(
     input wire logic    rst_n
 );
 
+import axil_pkg::*;
+
 localparam STRB_WIDTH = DATA_WIDTH / 8;
 
 logic   [ADDR_WIDTH-1:0]    awaddr;     // Write address
@@ -27,7 +29,7 @@ logic   [STRB_WIDTH-1:0]    wstrb;      // Write strobes, one bit for each byte 
 logic                       wvalid;     // Write valid/ready to be read by the slave
 logic                       wready;     // Write ready/slave ready to accept the write data
 
-logic              [1:0]    bresp;      // Write response. 2'b00 = OKAY, 2'b01 = EXOKAY, 2'b10 = SLVERR, 2'b11 = DECERR
+axil_resp_t                 bresp;      // Write response
 logic                       bvalid;     // Write response valid/ready to be read by the master
 logic                       bready;     // Response ready/master ready to accept the write response
 
@@ -36,7 +38,7 @@ logic                       arvalid;    // Read address valid/ready to be read b
 logic                       arready;    // Read address ready/slave ready to accept the address
 
 logic   [DATA_WIDTH-1:0]    rdata;      // Read data
-logic              [1:0]    rresp;      // Read response. 2'b00 = OKAY, 2'b01 = EXOKAY, 2'b10 = SLVERR, 2'b11 = DECERR
+axil_resp_t                 rresp;      // Read response
 logic                       rvalid;     // Read valid/ready to be read by the master
 logic                       rready;     // Read ready/master ready to accept the read data
 

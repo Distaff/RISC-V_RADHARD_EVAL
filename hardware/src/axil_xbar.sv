@@ -54,7 +54,7 @@ logic           master_mux_ok;  // no new transaction until the selection follow
 
 logic  [31:0]   m_awaddr, m_wdata, m_araddr, m_rdata;
 logic   [3:0]   m_wstrb;
-logic   [1:0]   m_bresp, m_rresp;
+axil_resp_t     m_bresp, m_rresp;
 logic           m_awvalid, m_wvalid, m_bready, m_arvalid, m_rready;
 logic           m_awready, m_wready, m_bvalid, m_arready, m_rvalid;
 
@@ -103,8 +103,8 @@ assign dbg_axi.rdata    = m_rdata;
 // copied into plain arrays that the paths below can index by register.
 logic [NUM_SLV-1:0] s_awvalid, s_awready, s_wvalid, s_wready, s_bvalid, s_bready;
 logic [NUM_SLV-1:0] s_arvalid, s_arready, s_rvalid, s_rready;
-logic        [1:0]  s_bresp [NUM_SLV];
-logic        [1:0]  s_rresp [NUM_SLV];
+axil_resp_t         s_bresp [NUM_SLV];
+axil_resp_t         s_rresp [NUM_SLV];
 logic       [31:0]  s_rdata [NUM_SLV];
 
 generate
@@ -176,7 +176,7 @@ always_comb begin
     m_awready = 1'b0;
     m_wready  = 1'b0;
     m_bvalid  = 1'b0;
-    m_bresp   = RESP_OKAY;
+    m_bresp   = AXIL_RESP_OKAY;
 
     case (wr_state)
         W_DATA: begin
@@ -188,7 +188,7 @@ always_comb begin
         W_RESP: begin
             s_bready[wr_sel] = wr_hit && m_bready;
             m_bvalid = wr_hit ? s_bvalid[wr_sel] : 1'b1;
-            m_bresp  = wr_hit ? s_bresp[wr_sel]  : RESP_DECERR;
+            m_bresp  = wr_hit ? s_bresp[wr_sel]  : AXIL_RESP_DECERR;
         end
         default: ;
     endcase
@@ -233,7 +233,7 @@ always_comb begin
     s_rready  = '0;
     m_arready = 1'b0;
     m_rvalid  = 1'b0;
-    m_rresp   = RESP_OKAY;
+    m_rresp   = AXIL_RESP_OKAY;
     m_rdata   = 32'd0;
 
     case (rd_state)
@@ -244,7 +244,7 @@ always_comb begin
         R_RESP: begin
             s_rready[rd_sel] = rd_hit && m_rready;
             m_rvalid = rd_hit ? s_rvalid[rd_sel] : 1'b1;
-            m_rresp  = rd_hit ? s_rresp[rd_sel]  : RESP_DECERR;
+            m_rresp  = rd_hit ? s_rresp[rd_sel]  : AXIL_RESP_DECERR;
             m_rdata  = rd_hit ? s_rdata[rd_sel]  : 32'd0;
         end
         default: ;
